@@ -506,6 +506,26 @@
             font-size: 16px;
         }
 
+        /* Discord Widget Section */
+        #discord {
+            background: rgba(0, 30, 60, 0.5);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .discord-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .discord-widget {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
         /* Easter Egg Styles */
         .funky-mode {
             font-family: 'Comic Sans MS', cursive !important;
@@ -516,6 +536,72 @@
         @keyframes funkyBackground {
             0% { filter: hue-rotate(0deg); }
             100% { filter: hue-rotate(360deg); }
+        }
+
+        .matrix-mode {
+            background: #000 !important;
+            color: #0f0 !important;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            animation: matrix-fall linear forwards;
+        }
+
+        @keyframes matrix-fall {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .upside-down {
+            transform: rotate(180deg);
+        }
+
+        .spin-mode {
+            animation: spin 3s infinite linear;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .party-mode {
+            animation: party 0.5s infinite;
+        }
+
+        @keyframes party {
+            0% { background: #ff0000; }
+            20% { background: #ffff00; }
+            40% { background: #00ff00; }
+            60% { background: #00ffff; }
+            80% { background: #0000ff; }
+            100% { background: #ff00ff; }
+        }
+
+        .big-head-mode * {
+            transition: all 0.5s ease;
+        }
+
+        .big-head-mode h1,
+        .big-head-mode h2,
+        .big-head-mode h3 {
+            transform: scale(1.5);
+            color: #ff9900 !important;
         }
 
         .particle {
@@ -536,6 +622,32 @@
                 opacity: 0;
                 transform: translate(var(--tx), var(--ty)) scale(0);
             }
+        }
+
+        .secret-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--neon-blue);
+            z-index: 10000;
+            text-align: center;
+            display: none;
+        }
+
+        .secret-message.show {
+            display: block;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; display: none; }
         }
 
         /* Responsive Design */
@@ -564,6 +676,11 @@
                 font-size: 16px;
                 padding: 6px 12px;
             }
+
+            .discord-widget {
+                width: 300px;
+                height: 400px;
+            }
         }
     </style>
 </head>
@@ -571,6 +688,12 @@
     <!-- Custom Cursor -->
     <div class="cursor-dot"></div>
     <div class="cursor-ring"></div>
+
+    <!-- Secret Message -->
+    <div class="secret-message" id="secretMessage">
+        <h3>You found a secret!</h3>
+        <p>You're awesome! 🎉</p>
+    </div>
 
     <!-- Header -->
     <header>
@@ -580,6 +703,7 @@
                 <ul>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#about">About</a></li>
+                    <li><a href="#discord">Discord</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
             </nav>
@@ -648,6 +772,19 @@
                         <div class="skill-name">Responsive</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discord Section -->
+    <section id="discord">
+        <div class="container">
+            <h2 class="section-title">Join Our Discord</h2>
+            <div class="discord-content">
+                <div class="discord-widget">
+                    <iframe src="https://discord.com/widget?id=1410718243798253711&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+                </div>
+                <p>Join our community to stay updated with my latest projects and connect with other developers!</p>
             </div>
         </div>
     </section>
@@ -868,6 +1005,158 @@
             setTimeout(() => {
                 particle.remove();
             }, 1000);
+        }
+
+        // NEW EASTER EGGS
+
+        // Matrix rain effect on pressing "m"
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyM' && !document.body.classList.contains('matrix-mode')) {
+                document.body.classList.add('matrix-mode');
+                startMatrixRain();
+                
+                setTimeout(() => {
+                    document.body.classList.remove('matrix-mode');
+                    const matrixRain = document.getElementById('matrixRain');
+                    if (matrixRain) matrixRain.remove();
+                }, 5000);
+            }
+        });
+
+        function startMatrixRain() {
+            const matrixRain = document.createElement('div');
+            matrixRain.id = 'matrixRain';
+            matrixRain.classList.add('matrix-rain');
+            document.body.appendChild(matrixRain);
+            
+            const characters = '01アイウエオカキクケコサシスセソ';
+            const fontSize = 20;
+            const columns = Math.floor(window.innerWidth / fontSize);
+            
+            for (let i = 0; i < columns; i++) {
+                const x = i * fontSize;
+                let y = Math.random() * -100;
+                
+                setInterval(() => {
+                    const char = document.createElement('div');
+                    char.classList.add('matrix-char');
+                    char.textContent = characters.charAt(Math.floor(Math.random() * characters.length));
+                    char.style.left = `${x}px`;
+                    char.style.top = `${y}px`;
+                    char.style.fontSize = `${fontSize}px`;
+                    char.style.opacity = Math.random() * 0.5 + 0.5;
+                    
+                    matrixRain.appendChild(char);
+                    
+                    // Remove character after animation completes
+                    setTimeout(() => {
+                        char.remove();
+                    }, 5000);
+                    
+                    y += fontSize;
+                    if (y > window.innerHeight) y = Math.random() * -100;
+                }, 100);
+            }
+        }
+
+        // Upside down mode on pressing "u"
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyU') {
+                document.body.classList.toggle('upside-down');
+            }
+        });
+
+        // Spin mode on pressing "s"
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyS') {
+                document.body.classList.toggle('spin-mode');
+            }
+        });
+
+        // Party mode on pressing "p"
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyP') {
+                document.body.classList.toggle('party-mode');
+            }
+        });
+
+        // Big head mode on pressing "b"
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyB') {
+                document.body.classList.toggle('big-head-mode');
+            }
+        });
+
+        // Secret message when clicking the 5th word of the intro
+        const intro = document.querySelector('.intro');
+        if (intro) {
+            intro.addEventListener('click', (e) => {
+                const words = intro.textContent.split(' ');
+                if (words.length >= 5) {
+                    const fifthWord = words[4];
+                    const rect = intro.getBoundingClientRect();
+                    
+                    // Check if click is near the 5th word (simplified)
+                    if (e.clientX > rect.left && e.clientY > rect.top) {
+                        showSecretMessage("You found the word: " + fifthWord);
+                    }
+                }
+            });
+        }
+
+        // Secret message when triple-clicking the footer
+        const footer = document.querySelector('footer');
+        if (footer) {
+            let clickTimes = 0;
+            footer.addEventListener('click', () => {
+                clickTimes++;
+                if (clickTimes === 3) {
+                    showSecretMessage("Thanks for exploring my portfolio!");
+                    clickTimes = 0;
+                }
+                
+                // Reset counter after 1 second
+                setTimeout(() => {
+                    clickTimes = 0;
+                }, 1000);
+            });
+        }
+
+        // Easter egg when scrolling to the bottom and then to the top quickly
+        let lastScrollTop = 0;
+        let scrollCount = 0;
+        
+        window.addEventListener('scroll', () => {
+            const st = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (st > lastScrollTop) {
+                // Scrolling down
+                if (st > document.body.scrollHeight - window.innerHeight - 10) {
+                    // At bottom of page
+                    scrollCount++;
+                }
+            } else {
+                // Scrolling up
+                if (st === 0 && scrollCount > 0) {
+                    // At top of page after being at bottom
+                    triggerParticleEffect();
+                    scrollCount = 0;
+                }
+            }
+            
+            lastScrollTop = st <= 0 ? 0 : st;
+        });
+
+        function showSecretMessage(text) {
+            const message = document.getElementById('secretMessage');
+            if (message) {
+                message.querySelector('p').textContent = text;
+                message.classList.add('show');
+                
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 3000);
+            }
         }
     </script>
 </body>
